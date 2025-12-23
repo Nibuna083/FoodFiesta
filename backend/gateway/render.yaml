@@ -1,0 +1,12 @@
+# Render configuration for Gateway Service
+services:
+  - type: web
+    name: food-fiesta-gateway
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 5000
