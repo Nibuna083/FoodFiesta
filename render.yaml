@@ -1,33 +1,14 @@
 # Render Blueprint for Food Fiesta Microservices
-# This file defines all backend services in one place
+# All services deploy simultaneously with pre-configured URLs
 
 services:
-  # Gateway Service - Main entry point
-  - type: web
-    name: food-fiesta-gateway
-    env: node
-    region: oregon
-    plan: free
-    rootDir: backend/gateway
-    buildCommand: npm install
-    startCommand: npm start
-    envVars:
-      - key: PORT
-        value: 10000
-      - key: IDENTITY_SERVICE_URL
-        sync: false
-      - key: ORDER_SERVICE_URL
-        sync: false
-
   # Identity Service - User & Agent authentication
   - type: web
     name: food-fiesta-identity
-    env: node
-    region: oregon
+    runtime: node
+    buildCommand: cd backend/identity-service && npm install
+    startCommand: cd backend/identity-service && npm start
     plan: free
-    rootDir: backend/identity-service
-    buildCommand: npm install
-    startCommand: npm start
     envVars:
       - key: PORT
         value: 10000
@@ -35,18 +16,51 @@ services:
         sync: false
       - key: JWT_SECRET
         generateValue: true
+      - key: NODE_ENV
+        value: production
 
   # Order Service - Restaurants, Menu, Orders
   - type: web
     name: food-fiesta-orders
-    env: node
-    region: oregon
+    runtime: node
+    buildCommand: cd backend/order-service && npm install
+    startCommand: cd backend/order-service && npm start
     plan: free
-    rootDir: backend/order-service
-    buildCommand: npm install
-    startCommand: npm start
     envVars:
       - key: PORT
         value: 10000
       - key: MONGO_URI
         sync: false
+      - key: NODE_ENV
+        value: production
+
+  # Gateway Service - API Gateway (proxies to other services)
+  - type: web
+    name: food-fiesta-gateway
+    runtime: node
+    buildCommand: cd backend/gateway && npm install
+    startCommand: cd backend/gateway && npm start
+    plan: free
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: IDENTITY_SERVICE_URL
+        value: https://food-fiesta-identity.onrender.com
+      - key: ORDER_SERVICE_URL
+        value: https://food-fiesta-orders.onrender.com
+      - key: NODE_ENV
+        value: production
+
+  # Frontend - React UI
+  - type: web
+    name: food-fiesta-frontend
+    runtime: node
+    buildCommand: cd frontend && npm install && npm run build && npm install -g serve
+    startCommand: serve -s frontend/dist -l 10000
+    plan: free
+    envVars:
+      - key: VITE_API_URL
+        value: https://food-fiesta-gateway.onrender.com/api
+      - key: NODE_ENV
+        value: production
+
