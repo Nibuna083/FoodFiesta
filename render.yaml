@@ -1,0 +1,52 @@
+# Render Blueprint for Food Fiesta Microservices
+# This file defines all backend services in one place
+
+services:
+  # Gateway Service - Main entry point
+  - type: web
+    name: food-fiesta-gateway
+    env: node
+    region: oregon
+    plan: free
+    rootDir: backend/gateway
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: IDENTITY_SERVICE_URL
+        sync: false
+      - key: ORDER_SERVICE_URL
+        sync: false
+
+  # Identity Service - User & Agent authentication
+  - type: web
+    name: food-fiesta-identity
+    env: node
+    region: oregon
+    plan: free
+    rootDir: backend/identity-service
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+
+  # Order Service - Restaurants, Menu, Orders
+  - type: web
+    name: food-fiesta-orders
+    env: node
+    region: oregon
+    plan: free
+    rootDir: backend/order-service
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: MONGO_URI
+        sync: false
