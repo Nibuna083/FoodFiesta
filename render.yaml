@@ -55,7 +55,7 @@ services:
   - type: web
     name: food-fiesta-frontend
     runtime: node
-    buildCommand: cd frontend && npm ci && npm run build && npm install -g serve
+    buildCommand: cd frontend && npm install && npm run build && npm install -g serve
     startCommand: serve -s frontend/dist -l 10000
     plan: free
     envVars:
