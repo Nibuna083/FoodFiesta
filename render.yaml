@@ -55,8 +55,10 @@ services:
   - type: web
     name: food-fiesta-frontend
     runtime: node
-    buildCommand: cd frontend && npm install && npm run build && npm install -g serve
-    startCommand: serve -s frontend/dist -l 10000
+    # Use 'npm install' to ensure Vite is installed
+    buildCommand: cd frontend && npm install && npm run build
+    # Point 'serve' to the 'dist' folder created by Vite
+    startCommand: cd frontend && npx serve -s dist -l $PORT
     plan: free
     envVars:
       - key: VITE_API_URL
